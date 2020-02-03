@@ -4,17 +4,15 @@ mongoose.connect('mongodb://localhost:27017/demodb',{
   useUnifiedTopology: true 
 
 });
-var userRegistration = mongoose.Schema({
+var UserRegistration = new mongoose.Schema({
+  image:{contentType: String},
   name:String,
-  phone_Number: { type: Number, unique: true},
+  phone_Number: { type: Number },
   address: String,
-  email:{ type: String,unique: true},
-  password:{ type: String,unique: true},
-  dateOfBirth: String,
+  email:{ type: String, unique: true},
+  password:{ type: String },
+  dateOfBirth: { type: Date },
   securityQuestion:String,
-
-  
 });
-var registration = mongoose.model("registration",userRegistration);
 
-module.exports = registration;
+module.exports = mongoose.model("registration", UserRegistration);;

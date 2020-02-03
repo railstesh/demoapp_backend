@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var registration= require('./model');
+var UserRegistration= require('./model');
 var bodyParser = require('body-parser'); 
 app.use(express.static('public'));  
 app.use(bodyParser.json({limit:'5mb'}));    
@@ -8,60 +8,56 @@ app.use(bodyParser.urlencoded({extended:true, limit:'5mb'}));
 var cors = require('cors')
 app.use(cors())
 
-
-app.get('/', function(req, res){
-   res.send("Hello world!");
-});
-app.get("/users",function(req, res){   
-   Person.find({}, function(err, data){  
-      if(err){  
-         res.json(err);  
-      }  
-      else{        
-         res.json(data);  
-      }  
-   });  
-})  
-app.post('/registration',function(req,res){
-  var registrationInfo = req.body;
-  console.log('registrationInfo =', registrationInfo)
-  var newRegister = new registration({
-     name:registrationInfo.name,
-     phone_Number:registrationInfo.phoneNumber,
-     address: registrationInfo.address,
-     email:registrationInfo.email,
-     password:registrationInfo.password,
-     dateOfBirth:registrationInfo.dateOfBirth,
-     securityQuestion:registrationInfo.securityQuestion,
+app.post('/registration', function(req,res){
+  const {image,name, phone_Number, address, email, password, dateOfBirth, security_Question} = req.body;
+  var newRegister = new UserRegistration({
+     image, name, phone_Number, address, email, password, dateOfBirth, security_Question
   });
-   return newRegister.save().then(response => {
-      
-      res.json({ status: 200, user: response});
-   }, (err) => {
-      console.log('err = ', err)
-      res.json({ status: 500, error: err });
-   });
+   newRegister.save((error, user) => {
+      if (error) {
+        res.send(error);
+      } else if (!user) {
+        res.send("Data not found");
+      } else {
+        res.status(200).send(user);
+      }
+    })
 })
 app.post('/login',function(req, res){
-   email=req.body.email;
-   password=req.body.password;
-   console.log('email = ', email);
-  
-   registration.findOne({ email:req.body.email ,password:req.body.password},
-      function(err,data){
-         if(data===null){
-         res.json("incorrect email");
-         }else{
-            if( data.email===req.body.email && data.password===req.body.password) {
-               res.json(data);
-               }
-            else{
-               res.json();
-               }
-            }
+   const {email, password} = req.body
+   UserRegistration.findOne({ email , password },
+      (error, user) => {
+         if (error) {
+           res.send(error);
+         } else if (!user) {
+           res.status(404).send("Data not found");
+         } else {
+           res.status(200).send(user);
+         }
       }
    )
 })
+app.put('/updateProfile',function(req,res){
+    const {name, phone_Number, address, email, password, dateOfBirth, security_Question} = req.body;
+    console.log(req.body)
+    UserRegistration.findOneAndUpdate({email:email}, {$set:{ name, phone_Number, address, email, password, dateOfBirth, security_Question}},   
+      function(err, user) { 
+        console.log("=========",user) 
+        if (err) {  
+        res.json(err);   
+        }  
+        else{ 
+          UserRegistration.find({}, function(err, user){  
+              if(err){  
+                 res.json(err);  
+              }  
+              else{        
+                 res.json(user);  
+              }  
+           }); 
+        }  
+    });  
+  }   
+)
 
-
-app.listen(3001);
+app.listen(8081);
