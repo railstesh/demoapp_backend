@@ -9,9 +9,10 @@ var cors = require('cors')
 app.use(cors())
 
 app.post('/registration', function(req,res){
-  const {image,name, phone_Number, address, email, password, dateOfBirth, security_Question} = req.body;
+  const {file, name, phone_Number, address, email, password, dateOfBirth, security_Question, security_Answer} = req.body;
+  console.log('body', req.body)
   var newRegister = new UserRegistration({
-     image, name, phone_Number, address, email, password, dateOfBirth, security_Question
+    file, name, phone_Number, address, email, password, dateOfBirth, security_Question, security_Answer
   });
    newRegister.save((error, user) => {
       if (error) {
@@ -38,11 +39,10 @@ app.post('/login',function(req, res){
    )
 })
 app.put('/updateProfile',function(req,res){
-    const {name, phone_Number, address, email, password, dateOfBirth, security_Question} = req.body;
-    console.log(req.body)
-    UserRegistration.findOneAndUpdate({email:email}, {$set:{ name, phone_Number, address, email, password, dateOfBirth, security_Question}},   
+    const {file,name, phone_Number, address, email, password, dateOfBirth, security_Question, security_Answer} = req.body;
+    console.log("=======",file)
+    UserRegistration.findOneAndUpdate({email:email}, {$set:{file, name, phone_Number, address, email, password, dateOfBirth, security_Question, security_Answer}},   
       function(err, user) { 
-        console.log("=========",user) 
         if (err) {  
         res.json(err);   
         }  

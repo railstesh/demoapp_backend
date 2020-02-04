@@ -5,14 +5,15 @@ mongoose.connect('mongodb://localhost:27017/demodb',{
 
 });
 var UserRegistration = new mongoose.Schema({
-  image:{contentType: String},
+  file: String,
   name:String,
   phone_Number: { type: Number },
   address: String,
   email:{ type: String, unique: true},
   password:{ type: String },
   dateOfBirth: { type: Date },
-  securityQuestion:String,
+  security_Question: String,
+  security_Answer: String
 });
 
 module.exports = mongoose.model("registration", UserRegistration);;
